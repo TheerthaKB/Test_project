@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Delight Bakery - Premium Baked Goods</title>
+    <style>
+        * {margin: 0; padding: 0; box-sizing: border-box;}
+        :root {--cream: #FFF8F3; --light-cream: #FFFBF7; --dark-brown: #4A3728; --soft-pink: #F8D7DA; --warm-beige: #D4B5A0; --gold: #D4AF37; --text-dark: #2C1810; --accent-light: #FFE5D9; --success: #28a745; --error: #dc3545;}
+        body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--text-dark); background-color: var(--light-cream); transition: background-color 0.3s ease, color 0.3s ease; overflow-x: hidden;}
+        body.dark-mode {background-color: #1a1a1a; color: #f0f0f0;}
+        .loading-spinner {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--light-cream); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeOut 0.8s ease-in-out 2s forwards;}
+        .spinner {width: 50px; height: 50px; border: 4px solid var(--warm-beige); border-top: 4px solid var(--dark-brown); border-radius: 50%; animation: spin 1s linear infinite;}
+        @keyframes spin {to {transform: rotate(360deg);}}
+        @keyframes fadeOut {to {opacity: 0; visibility: hidden;}}
+        nav {position: sticky; top: 0; width: 100%; background: rgba(255, 248, 243, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 2px 10px rgba(74, 55, 40, 0.1);}
+        body.dark-mode nav {background: rgba(30, 30, 30, 0.95); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);}
+        .logo {font-size: 1.8rem; font-weight: 700; color: var(--dark-brown); text-decoration: none; letter-spacing: 1px; background: linear-gradient(135deg, var(--dark-brown), var(--warm-beige)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;}
+        .nav-links {display: flex; gap: 2rem; list-style: none;}
+        .nav-links a {color: var(--text-dark); text-decoration: none; font-weight: 500; transition: all 0.3s ease; position: relative;}
+        body.dark-mode .nav-links a {color: #f0f0f0;}
+        .nav-links a::after {content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--gold); transition: width 0.3s ease;}
+        .nav-links a:hover::after {width: 100%;}
+        .nav-controls {display: flex; gap: 1.5rem; align-items: center;}
+        .cart-icon {cursor: pointer; font-size: 1.5rem; position: relative; transition: transform 0.3s ease;}
+        .cart-icon:hover {transform: scale(1.1);}
+        .cart-count {position: absolute; top: -8px; right: -10px; background: var(--soft-pink); color: var(--text-dark); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold;}
+        .theme-toggle {background: none; border: none; font-size: 1.5rem; cursor: pointer; transition: transform 0.3s ease;}
+        .theme-toggle:hover {transform: rotate(20deg);}
+        .hamburger {display: none; flex-direction: column; gap: 5px; cursor: pointer;}
+        .hamburger span {width: 25px; height: 3px; background: var(--text-dark); border-radius: 2px; transition: all 0.3s ease;}
+        body.dark-mode .hamburger span {background: #f0f0f0;}
+        .hero {background: linear-gradient(135deg, var(--cream) 0%, var(--soft-pink) 100%); padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden;}
+        .hero::before {content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23D4AF37" opacity="0.1"/><circle cx="80" cy="80" r="2" fill="%23D4AF37" opacity="0.1"/></svg>'); opacity: 0.5; z-index: 0;}
+        .hero-content {position: relative; z-index: 1; animation: slideInDown 0.8s ease-out;}
+        @keyframes slideInDown {from {opacity: 0; transform: translateY(-30px);} to {opacity: 1; transform: translateY(0);}}
+        .logo-icon {font-size: 4rem; margin-bottom: 1rem; animation: bounce 2s infinite;}
+        @keyframes bounce {0%, 100% {transform: translateY(0);} 50% {transform: translateY(-20px);}}
+        .hero h1 {font-size: 3.5rem; margin-bottom: 1rem; color: var(--dark-brown); font-weight: 700; letter-spacing: 1px;}
+        body.dark-mode .hero {background: linear-gradient(135deg, #2a2a2a 0%, #3a2a2a 100%);}
+        body.dark-mode .hero h1 {color: var(--soft-pink);}
+        .hero p {font-size: 1.2rem; margin-bottom: 2rem; color: var(--dark-brown); opacity: 0.9;}
+        body.dark-mode .hero p {color: #ddd;}
+        .cta-buttons {display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;}
+        .btn {padding: 1rem 2rem; font-size: 1rem; font-weight: 600; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-primary {background: linear-gradient(135deg, var(--dark-brown), var(--warm-beige)); color: white; box-shadow: 0 5px 15px rgba(74, 55, 40, 0.3);}
+        .btn-primary:hover {transform: translateY(-3px); box-shadow: 0 8px 25px rgba(74, 55, 40, 0.4);}
+        .btn-secondary {background: transparent; color: var(--dark-brown); border: 2px solid var(--dark-brown);}
+        body.dark-mode .btn-secondary {color: var(--soft-pink); border-color: var(--soft-pink);}
+        .btn-secondary:hover {background: var(--dark-brown); color: white;}
+        body.dark-mode .btn-secondary:hover {background: var(--soft-pink); color: var(--text-dark);}
+        .about {padding: 5rem 2rem; max-width: 1200px; margin: 0 auto;}
+        .section-title {text-align: center; font-size: 2.5rem; margin-bottom: 1rem; color: var(--dark-brown); position: relative; padding-bottom: 1rem;}
+        body.dark-mode .section-title {color: var(--soft-pink);}
+        .section-title::after {content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100px; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent);}
+        .about-content {display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 3rem;}
+        .about-text h3 {font-size: 1.8rem; margin-bottom: 1rem; color: var(--dark-brown);}
+        body.dark-mode .about-text h3 {color: var(--soft-pink);}
+        .about-text p {line-height: 1.8; margin-bottom: 1rem; color: var(--text-dark); opacity: 0.9;}
+        body.dark-mode .about-text p {color: #ddd;}
+        .features {display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;}
+        .feature-card {background: white; padding: 1.5rem; border-radius: 15px; text-align: center; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);}
+        body.dark-mode .feature-card {background: #2a2a2a; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);}
+        .feature-card:hover {transform: translateY(-10px); box-shadow: 0 8px 25px rgba(74, 55, 40, 0.2);}
+        .feature-card .icon {font-size: 2.5rem; margin-bottom: 1rem;}
+        .feature-card h4 {color: var(--dark-brown); margin-bottom: 0.5rem;}
+        body.dark-mode .feature-card h4 {color: var(--soft-pink);}
+        .about-image {position: relative; height: 400px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);}
+        .about-image img {width: 100%; height: 100%; object-fit: cover;}
+        .menu {padding: 5rem 2rem; background: linear-gradient(135deg, var(--cream) 0%, var(--accent-light) 100%); max-width: 1400px; margin: 0 auto;}
+        body.dark-mode .menu {background: #1a1a1a;}
+        .menu-controls {display: flex; gap: 1rem; justify-content: center; margin: 2rem 0; flex-wrap: wrap; align-items: center;}
+        .search-bar {padding: 0.8rem 1.5rem; border: 2px solid var(--warm-beige); border-radius: 30px; font-size: 1rem; width: 250px; background: white; color: var(--text-dark); transition: all 0.3s ease;}
+        body.dark-mode .search-bar {background: #2a2a2a; color: #f0f0f0; border-color: var(--warm-beige);}
+        .search-bar:focus {outline: none; border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);}
+        .category-filters {display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;}
+        .filter-btn {padding: 0.7rem 1.5rem; border: 2px solid var(--dark-brown); background: transparent; color: var(--dark-brown); border-radius: 30px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;}
+        body.dark-mode .filter-btn {border-color: var(--soft-pink); color: var(--soft-pink);}
+        .filter-btn.active {background: var(--dark-brown); color: white;}
+        body.dark-mode .filter-btn.active {background: var(--soft-pink); color: var(--text-dark);}
+        .menu-grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem;}
+        .menu-card {background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; animation: fadeIn 0.6s ease-out;}
+        body.dark-mode .menu-card {background: #2a2a2a;}
+        @keyframes fadeIn {from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);}}
+        .menu-card:hover {transform: translateY(-10px); box-shadow: 0 10px 30px rgba(74, 55, 40, 0.2);}
+        .menu-card-image {width: 100%; height: 250px; overflow: hidden; position: relative;}
+        .menu-card-image img {width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;}
+        .menu-card:hover .menu-card-image img {transform: scale(1.1);}
+        .menu-card-content {padding: 1.5rem;}
+        .menu-card h3 {color: var(--dark-brown); margin-bottom: 0.5rem; font-size: 1.3rem;}
+        body.dark-mode .menu-card h3 {color: var(--soft-pink);}
+        .menu-card p {color: var(--text-dark); opacity: 0.7; font-size: 0.9rem; margin-bottom: 1rem; height: 40px; overflow: hidden;}
+        .menu-card-footer {display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;}
+        .price {font-size: 1.5rem; font-weight: 700; color: var(--dark-brown);}
+        body.dark-mode .price {color: var(--gold);}
+        .rating {color: var(--gold); font-size: 0.9rem;}
+        .add-to-cart-btn {padding: 0.6rem 1.5rem; background: var(--dark-brown); color: white; border: none; border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;}
+        .add-to-cart-btn:hover {background: var(--warm-beige); color: var(--text-dark); transform: scale(1.05);}
+        .specials {padding: 5rem 2rem; max-width: 1200px; margin: 0 auto;}
+        .specials-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;}
+        .special-card {background: linear-gradient(135deg, var(--soft-pink), var(--accent-light)); padding: 2rem; border-radius: 20px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 5px 20px rgba(74, 55, 40, 0.15);}
+        body.dark-mode .special-card {background: linear-gradient(135deg, #3a2a2a, #2a2a2a);}
+        .special-card::before {content: ''; position: absolute; top: -50%; right: -50%; width: 300px; height: 300px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; animation: float 6s ease-in-out infinite;}
+        @keyframes float {0%, 100% {transform: translate(0, 0);} 50% {transform: translate(30px, 20px);}}
+        .special-card:hover {transform: translateY(-10px); box-shadow: 0 10px 40px rgba(74, 55, 40, 0.2);}
+        .special-card h3 {font-size: 1.8rem; color: var(--dark-brown); margin-bottom: 1rem; position: relative; z-index: 1;}
+        body.dark-mode .special-card h3 {color: var(--soft-pink);}
+        .discount-badge {display: inline-block; background: var(--gold); color: var(--text-dark); padding: 0.5rem 1rem; border-radius: 30px; font-weight: bold; margin-bottom: 1rem;}
+        .countdown {font-size: 1.2rem; color: var(--dark-brown); margin: 1rem 0; font-weight: 600;}
+        body.dark-mode .countdown {color: var(--soft-pink);}
+        .gallery {padding: 5rem 2rem; background: linear-gradient(135deg, var(--cream) 0%, var(--light-cream) 100%); max-width: 1200px; margin: 0 auto;}
+        body.dark-mode .gallery {background: #1a1a1a;}
+        .gallery-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 3rem;}
+        .gallery-item {position: relative; height: 300px; border-radius: 15px; overflow: hidden; cursor: pointer; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); transition: all 0.3s ease;}
+        .gallery-item:hover {transform: scale(1.05); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);}
+        .gallery-item img {width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;}
+        .gallery-item:hover img {transform: scale(1.2);}
+        .gallery-overlay {position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;}
+        .gallery-item:hover .gallery-overlay {opacity: 1;}
+        .gallery-overlay span {color: white; font-size: 2rem;}
+        .lightbox {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 2000; animation: fadeIn 0.3s ease;}
+        .lightbox.active {display: flex; align-items: center; justify-content: center;}
+        .lightbox-content {position: relative; max-width: 90%; max-height: 90%;}
+        .lightbox-content img {max-width: 100%; max-height: 90vh; border-radius: 15px;}
+        .lightbox-close {position: absolute; top: 20px; right: 30px; color: white; font-size: 2rem; cursor: pointer; transition: transform 0.3s ease;}
+        .lightbox-close:hover {transform: scale(1.2);}
+        .testimonials {padding: 5rem 2rem; max-width: 1200px; margin: 0 auto;}
+        .testimonials-carousel {position: relative; margin-top: 3rem; overflow: hidden;}
+        .testimonial-card {background: white; padding: 2rem; border-radius: 15px; text-align: center; position: absolute; width: 100%; opacity: 0; transition: opacity 0.5s ease; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);}
+        body.dark-mode .testimonial-card {background: #2a2a2a;}
+        .testimonial-card.active {opacity: 1; position: relative;}
+        .testimonial-image {width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 1rem; overflow: hidden; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);}
+        .testimonial-image img {width: 100%; height: 100%; object-fit: cover;}
+        .testimonial-name {font-size: 1.3rem; font-weight: 700; color: var(--dark-brown); margin-bottom: 0.5rem;}
+        body.dark-mode .testimonial-name {color: var(--soft-pink);}
+        .testimonial-text {color: var(--text-dark); opacity: 0.8; line-height: 1.8; margin: 1rem 0; font-style: italic;}
+        .carousel-controls {display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;}
+        .carousel-dot {width: 12px; height: 12px; border-radius: 50%; background: var(--warm-beige); cursor: pointer; transition: all 0.3s ease;}
+        .carousel-dot.active {background: var(--dark-brown); width: 30px; border-radius: 10px;}
+        .cart-sidebar {position: fixed; right: -400px; top: 0; width: 400px; height: 100vh; background: white; box-shadow: -5px 0 20px rgba(0, 0, 0, 0.15); transition: right 0.3s ease; z-index: 1500; overflow-y: auto; padding: 2rem 1rem;}
+        body.dark-mode .cart-sidebar {background: #1a1a1a;}
+        .cart-sidebar.active {right: 0;}
+        .cart-header {display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 2px solid var(--warm-beige); padding-bottom: 1rem;}
+        .cart-header h2 {color: var(--dark-brown); font-size: 1.5rem;}
+        body.dark-mode .cart-header h2 {color: var(--soft-pink);}
+        .cart-close {background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-dark);}
+        body.dark-mode .cart-close {color: #f0f0f0;}
+        .cart-items {margin-bottom: 2rem; min-height: 300px;}
+        .cart-item {display: flex; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--accent-light); border-radius: 10px;}
+        body.dark-mode .cart-item {background: #2a2a2a;}
+        .cart-item-image {width: 80px; height: 80px; border-radius: 8px; overflow: hidden; flex-shrink: 0;}
+        .cart-item-image img {width: 100%; height: 100%; object-fit: cover;}
+        .cart-item-details {flex: 1;}
+        .cart-item-name {font-weight: 700; color: var(--dark-brown); margin-bottom: 0.3rem;}
+        body.dark-mode .cart-item-name {color: var(--soft-pink);}
+        .cart-item-price {color: var(--gold); font-weight: 600; margin-bottom: 0.5rem;}
+        .quantity-control {display: flex; gap: 0.5rem; align-items: center;}
+        .quantity-control button {width: 25px; height: 25px; border: none; background: var(--dark-brown); color: white; border-radius: 5px; cursor: pointer; font-weight: bold;}
+        .quantity-control button:hover {background: var(--warm-beige); color: var(--text-dark);}
+        .remove-btn {width: 100%; padding: 0.5rem; background: var(--error); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 0.8rem; margin-top: 0.5rem;}
+        .remove-btn:hover {background: #c82333;}
+        .cart-totals {background: var(--accent-light); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;}
+        body.dark-mode .cart-totals {background: #2a2a2a;}
+        .total-row {display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: var(--text-dark);}
+        body.dark-mode .total-row {color: #f0f0f0;}
+        .total-amount {font-size: 1.5rem; font-weight: 700; color: var(--gold); border-top: 2px solid var(--warm-beige); padding-top: 1rem;}
+        .checkout-btn {width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--dark-brown), var(--warm-beige)); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer;}
+        .checkout-btn:hover {transform: translateY(-3px); box-shadow: 0 8px 25px rgba(74, 55, 40, 0.3);}
+        .custom-cake {padding: 5rem 2rem; background: linear-gradient(135deg, var(--cream) 0%, var(--soft-pink) 100%); max-width: 1200px; margin: 0 auto;}
+        body.dark-mode .custom-cake {background: linear-gradient(135deg, #2a2a2a, #3a2a2a);}
+        .form-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;}
+        .form-group {display: flex; flex-direction: column;}
+        .form-group label {font-weight: 600; color: var(--dark-brown); margin-bottom: 0.5rem;}
+        body.dark-mode .form-group label {color: var(--soft-pink);}
+        .form-group input, .form-group select, .form-group textarea {padding: 0.8rem; border: 2px solid var(--warm-beige); border-radius: 10px; font-size: 1rem; background: white; color: var(--text-dark); transition: all 0.3s ease; font-family: inherit;}
+        body.dark-mode .form-group input, body.dark-mode .form-group select, body.dark-mode .form-group textarea {background: #2a2a2a; color: #f0f0f0; border-color: var(--warm-beige);}
+        .form-group textarea {grid-column: 1 / -1; resize: vertical; min-height: 100px;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {outline: none; border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);}
+        .form-error {color: var(--error); font-size: 0.8rem; margin-top: 0.3rem; display: none;}
+        .form-group.error input, .form-group.error select, .form-group.error textarea {border-color: var(--error);}
+        .form-group.error .form-error {display: block;}
+        .submit-btn {grid-column: 1 / -1; padding: 1rem; background: linear-gradient(135deg, var(--dark-brown), var(--warm-beige)); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 1rem;}
+        .submit-btn:hover {transform: translateY(-3px); box-shadow: 0 8px 25px rgba(74, 55, 40, 0.3);}
+        .stats {padding: 3rem 2rem; background: var(--dark-brown); color: white;}
+        .stats-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;}
+        .stat-card {text-align: center;}
+        .stat-number {font-size: 3rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem;}
+        .stat-label {font-size: 1rem; opacity: 0.9;}
+        .contact {padding: 5rem 2rem; max-width: 1200px; margin: 0 auto;}
+        .contact-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem;}
+        .contact-info {display: flex; flex-direction: column; gap: 2rem;}
+        .contact-item {display: flex; gap: 1rem;}
+        .contact-icon {font-size: 2rem; color: var(--gold); width: 50px; flex-shrink: 0;}
+        .contact-details h3 {color: var(--dark-brown); margin-bottom: 0.3rem;}
+        body.dark-mode .contact-details h3 {color: var(--soft-pink);}
+        .contact-details p {color: var(--text-dark); opacity: 0.8;}
+        body.dark-mode .contact-details p {color: #ddd;}
+        .map-container {border-radius: 15px; overflow: hidden; height: 400px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);}
+        .map-container iframe {width: 100%; height: 100%; border: none;}
+        footer {background: var(--dark-brown); color: white; padding: 3rem 2rem; text-align: center;}
+        .footer-content {max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem; text-align: left;}
+        .footer-section h4 {margin-bottom: 1rem; color: var(--gold);}
+        .footer-section ul {list-style: none;}
+        .footer-section ul li {margin-bottom: 0.5rem;}
+        .footer-section ul li a {color: white; text-decoration: none; opacity: 0.8; transition: opacity 0.3s ease;}
+        .footer-section ul li a:hover {opacity: 1;}
+        .social-icons {display: flex; gap: 1rem; justify-content: flex-start;}
+        .social-icon {width: 40px; height: 40px; border-radius: 50%; background: var(--gold); color: var(--dark-brown); display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease; cursor: pointer;}
+        .social-icon:hover {background: var(--warm-beige); transform: scale(1.1);}
+        .newsletter {display: flex; gap: 0.5rem;}
+        .newsletter input {flex: 1; padding: 0.8rem; border: none; border-radius: 5px; font-size: 0.9rem;}
+        .newsletter button {padding: 0.8rem 1.5rem; background: var(--gold); color: var(--dark-brown); border: none; border-radius: 5px; cursor: pointer; font-weight: 600;}
+        .newsletter button:hover {background: var(--warm-beige); transform: scale(1.05);}
+        .footer-bottom {border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 2rem; text-align: center;}
+        .whatsapp-btn {position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; z-index: 500; text-decoration: none;}
+        .whatsapp-btn:hover {transform: scale(1.1); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);}
+        .scroll-top {position: fixed; bottom: 30px; right: 100px; width: 50px; height: 50px; background: var(--dark-brown); border-radius: 50%; display: none; align-items: center; justify-content: center; color: white; font-size: 1.5rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); z-index: 500;}
+        .scroll-top.show {display: flex;}
+        .scroll-top:hover {transform: translateY(-5px); background: var(--warm-beige); color: var(--dark-brown);}
+        .toast {position: fixed; bottom: 30px; right: 30px; background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); z-index: 2500; animation: slideIn 0.3s ease-out; max-width: 300px;}
+        @keyframes slideIn {from {transform: translateX(400px); opacity: 0;} to {transform: translateX(0); opacity: 1;}}
+        @keyframes slideOut {to {transform: translateX(400px); opacity: 0;}}
+        .toast.remove {animation: slideOut 0.3s ease-out forwards;}
+        .toast-message {font-weight: 600; margin-bottom: 0.5rem;}
+        .toast.success {border-left: 4px solid var(--success);}
+        .toast.error {border-left: 4px solid var(--error);}
+        .faq {padding: 5rem 2rem; background: linear-gradient(135deg, var(--cream), var(--accent-light)); max-width: 900px; margin: 0 auto;}
+        body.dark-mode .faq {background: #1a1a1a;}
+        .faq-container {margin-top: 3rem;}
+        .faq-item {background: white; margin-bottom: 1rem; border-radius: 10px; overflow: hidden; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);}
+        body.dark-mode .faq-item {background: #2a2a2a;}
+        .faq-question {padding: 1.5rem; background: var(--accent-light); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--dark-brown);}
+        body.dark-mode .faq-question {background: #3a3a3a; color: var(--soft-pink);}
+        .faq-question:hover {background: var(--warm-beige);}
+        .faq-arrow {transition: transform 0.3s ease; font-size: 1.3rem;}
+        .faq-item.active .faq-arrow {transform: rotate(180deg);}
+        .faq-answer {padding: 0; max-height: 0; overflow: hidden; transition: all 0.3s ease; color: var(--text-dark);}
+        body.dark-mode .faq-answer {color: #ddd;}
+        .faq-item.active .faq-answer {padding: 1.5rem; max-height: 500px;}
+        @media (max-width: 1024px) {.about-content {grid-template-columns: 1fr;} .contact-grid {grid-template-columns: 1fr;} .menu-grid {grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));}}
+        @media (max-width: 768px) {.hamburger {display: flex;} .nav-links {display: none; position: absolute; top: 60px; left: 0; right: 0; flex-direction: column; background: white; padding: 1rem; gap: 0; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);} body.dark-mode .nav-links {background: #1a1a1a;} .nav-links.active {display: flex;} .nav-links a {padding: 1rem; border-bottom: 1px solid var(--warm-beige);} .hero h1 {font-size: 2.5rem;} .section-title {font-size: 2rem;} .features {grid-template-columns: 1fr;} .form-grid {grid-template-columns: 1fr;} .cta-buttons {flex-direction: column; gap: 1rem;} .btn {width: 100%;} .cart-sidebar {width: 100%; max-width: 350px;} .about-image {height: 300px;} .menu-grid {grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));} .menu-card-image {height: 200px;} .testimonials-carousel {min-height: 400px;} .footer-content {grid-template-columns: 1fr; text-align: center;} .social-icons {justify-content: center;} .gallery-grid {grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));} .search-bar {width: 100%; max-width: 300px;} .menu-controls {flex-direction: column;} .scroll-top {bottom: 100px;}}
+        @media (max-width: 480px) {nav {padding: 1rem;} .logo {font-size: 1.5rem;} .hero {padding: 3rem 1rem;} .hero h1 {font-size: 2rem;} .hero p {font-size: 1rem;} .section-title {font-size: 1.5rem;} .about, .menu, .specials, .gallery, .testimonials, .custom-cake, .contact, .faq {padding: 3rem 1rem;} .menu-card-image {height: 150px;} .logo-icon {font-size: 3rem;} .cart-sidebar {max-width: 90vw;} .gallery-grid {grid-template-columns: 1fr;} .lightbox-content img {max-width: 95vw;} .stats-grid {grid-template-columns: 1fr;} .stat-number {font-size: 2.5rem;} .whatsapp-btn, .scroll-top {width: 45px; height: 45px; bottom: 20px; font-size: 1.3rem;} .scroll-top {right: 65px;}}
+    </style>
+    <script>
+        const hamburger=document.querySelector('.hamburger'),navLinks=document.querySelector('.nav-links'),cartIcon=document.querySelector('.cart-icon'),cartSidebar=document.querySelector('.cart-sidebar'),cartClose=document.querySelector('.cart-close'),themeToggle=document.querySelector('.theme-toggle'),scrollTop=document.querySelector('.scroll-top'),lightbox=document.querySelector('.lightbox'),lightboxClose=document.querySelector('.lightbox-close');
+        let cart=JSON.parse(localStorage.getItem('cart'))||[];
+        const products=[{id:1,name:'Chocolate Layer Cake',category:'Cakes',price:45,rating:4.8,image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop'},{id:2,name:'Vanilla Dream Cake',category:'Cakes',price:40,rating:4.9,image:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=300&fit=crop'},{id:3,name:'Croissants (Box of 6)',category:'Pastries',price:18,rating:4.7,image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&h=300&fit=crop'},{id:4,name:'Chocolate Chip Cookies',category:'Cookies',price:12,rating:4.6,image:'https://images.unsplash.com/photo-1599599810694-b5ac4dd94548?w=400&h=300&fit=crop'},{id:5,name:'Glazed Donuts',category:'Donuts',price:16,rating:4.8,image:'https://images.unsplash.com/photo-1585080195519-c21856d71c74?w=400&h=300&fit=crop'},{id:6,name:'Cappuccino',category:'Beverages',price:5,rating:4.5,image:'https://images.unsplash.com/photo-1517668808822-9ebb02ae2a0e?w=400&h=300&fit=crop'},{id:7,name:'French Bread',category:'Bread',price:8,rating:4.7,image:'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop'},{id:8,name:'Strawberry Cheesecake',category:'Cakes',price:50,rating:4.9,image:'https://images.unsplash.com/photo-1585080195519-c21856d71c74?w=400&h=300&fit=crop'}];
+        document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.querySelector('.loading-spinner').style.display='none'},2000);if(localStorage.getItem('darkMode')==='true'){document.body.classList.add('dark-mode');themeToggle.textContent='☀️'}renderMenu();updateCart();initCounts();initCarousel()});
+        hamburger.addEventListener('click',()=>navLinks.classList.toggle('active'));navLinks.querySelectorAll('a').forEach(link=>{link.addEventListener('click',()=>navLinks.classList.remove('active'))});
+        themeToggle.addEventListener('click',()=>{document.body.classList.toggle('dark-mode');const dark=document.body.classList.contains('dark-mode');localStorage.setItem('darkMode',dark);themeToggle.textContent=dark?'☀️':'🌙'});
+        cartIcon.addEventListener('click',()=>cartSidebar.classList.add('active'));cartClose.addEventListener('click',()=>cartSidebar.classList.remove('active'));
+        function renderMenu(){const grid=document.querySelector('.menu-grid');grid.innerHTML='';products.forEach(p=>{const card=document.createElement('div');card.className='menu-card';card.innerHTML=`<div class="menu-card-image"><img src="${p.image}"></div><div class="menu-card-content"><h3>${p.name}</h3><p>${p.name}</p><div class="menu-card-footer"><div><div class="price">$${p.price}</div><div class="rating">⭐${p.rating}</div></div><button class="add-to-cart-btn" onclick="addCart(${p.id})">Add</button></div></div>`;grid.appendChild(card)})}
+        function addCart(id){const p=products.find(x=>x.id===id);const existing=cart.find(x=>x.id===id);if(existing)existing.quantity++;else cart.push({...p,quantity:1});localStorage.setItem('cart',JSON.stringify(cart));updateCart();renderCart();showToast(`${p.name} added!`,'success')}
+        function updateCart(){const count=cart.reduce((t,i)=>t+i.quantity,0);document.querySelector('.cart-count').textContent=count}
+        function renderCart(){const items=document.querySelector('.cart-items');items.innerHTML='';if(cart.length===0){items.innerHTML='<p style="text-align:center;color:#999;">Empty</p>'}else{cart.forEach(i=>{const item=document.createElement('div');item.className='cart-item';item.innerHTML=`<img src="${i.image}" class="cart-item-image"><div class="cart-item-details"><div class="cart-item-name">${i.name}</div><div class="cart-item-price">$${i.price}</div><div class="quantity-control"><button onclick="update(${i.id},-1)">−</button><span>${i.quantity}</span><button onclick="update(${i.id},1)">+</button></div><button class="remove-btn" onclick="remove(${i.id})">Remove</button></div>`;items.appendChild(item)})}const sub=cart.reduce((t,i)=>t+i.price*i.quantity,0);const tax=sub*0.1;const total=sub+tax;document.querySelector('.cart-totals').innerHTML=`<div class="total-row"><span>Subtotal:</span><span>$${sub.toFixed(2)}</span></div><div class="total-row"><span>Tax:</span><span>$${tax.toFixed(2)}</span></div><div class="total-amount">Total: $${total.toFixed(2)}</div>`}
+        function update(id,change){const i=cart.find(x=>x.id===id);if(i){i.quantity+=change;if(i.quantity<=0)remove(id);else{localStorage.setItem('cart',JSON.stringify(cart));updateCart();renderCart()}}}
+        function remove(id){cart=cart.filter(i=>i.id!==id);localStorage.setItem('cart',JSON.stringify(cart));updateCart();renderCart();showToast('Removed','success')}
+        document.querySelectorAll('.filter-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const cat=btn.textContent;if(cat==='All')renderMenu();else{const filtered=products.filter(p=>p.category===cat);renderFiltered(filtered)}})});
+        function renderFiltered(items){const grid=document.querySelector('.menu-grid');grid.innerHTML='';items.forEach(p=>{const card=document.createElement('div');card.className='menu-card';card.innerHTML=`<div class="menu-card-image"><img src="${p.image}"></div><div class="menu-card-content"><h3>${p.name}</h3><div class="menu-card-footer"><div><div class="price">$${p.price}</div><div class="rating">⭐${p.rating}</div></div><button class="add-to-cart-btn" onclick="addCart(${p.id})">Add</button></div></div>`;grid.appendChild(card)})}
+        document.querySelectorAll('.gallery-item').forEach(item=>{item.addEventListener('click',()=>{const img=item.querySelector('img');document.querySelector('.lightbox-content img').src=img.src;lightbox.classList.add('active')})});
+        lightboxClose.addEventListener('click',()=>lightbox.classList.remove('active'));lightbox.addEventListener('click',e=>{if(e.target===lightbox)lightbox.classList.remove('active')});
+        let current=0;function initCarousel(){const cards=document.querySelectorAll('.testimonial-card');cards[0]?.classList.add('active');document.querySelectorAll('.carousel-dot').forEach((d,i)=>{d.addEventListener('click',()=>{current=i;show()})});setInterval(()=>{current=(current+1)%cards.length;show()},5000)}
+        function show(){const cards=document.querySelectorAll('.testimonial-card');cards.forEach(c=>c.classList.remove('active'));cards[current]?.classList.add('active');document.querySelectorAll('.carousel-dot').forEach(d=>d.classList.remove('active'));document.querySelectorAll('.carousel-dot')[current]?.classList.add('active')}
+        document.querySelectorAll('.faq-item').forEach(item=>{item.querySelector('.faq-question').addEventListener('click',()=>item.classList.toggle('active'))});
+        const form=document.querySelector('form');if(form){form.addEventListener('submit',e=>{e.preventDefault();let valid=true;document.querySelectorAll('.form-group').forEach(g=>{const input=g.querySelector('input,select,textarea');if(!input.value.trim()){g.classList.add('error');valid=false}else g.classList.remove('error')});if(valid){showToast('Order submitted!','success');form.reset();document.querySelectorAll('.form-group').forEach(g=>g.classList.remove('error'))}})}
+        function initCounts(){document.querySelectorAll('.countdown').forEach(e=>{const end=new Date().getTime()+24*60*60*1000;(function update(){const now=new Date().getTime();const dist=end-now;const h=Math.floor((dist%(1000*60*60*24))/(1000*60*60));const m=Math.floor((dist%(1000*60*60))/(1000*60));const s=Math.floor((dist%(1000*60))/1000);e.textContent=dist<0?'Expired':`Ends in: ${h}h ${m}m ${s}s`;setInterval(update,1000)})()})}
+        function showToast(msg,type='success'){const toast=document.createElement('div');toast.className=`toast ${type}`;toast.innerHTML=`<div class="toast-message">${msg}</div>`;document.body.appendChild(toast);setTimeout(()=>{toast.classList.add('remove');setTimeout(()=>toast.remove(),300)},3000)}
+        window.addEventListener('scroll',()=>{if(window.scrollY>300)scrollTop.classList.add('show');else scrollTop.classList.remove('show')});
+        scrollTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+        document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));t?.scrollIntoView({behavior:'smooth',block:'start'})})});
+        window.addEventListener('scroll',()=>{const stats=document.querySelector('.stats');if(stats&&stats.getBoundingClientRect().top<window.innerHeight){document.querySelectorAll('.stat-number').forEach(s=>{if(!s.dataset.animated){let current=0;const target=parseInt(s.dataset.target)||0;const inc=target/50;const counter=setInterval(()=>{current+=inc;if(current>=target){s.textContent=target.toLocaleString()+'+';clearInterval(counter)}else s.textContent=Math.floor(current).toLocaleString()},30);s.dataset.animated='true'}})}});
+    </script>
+</head>
+<body>
+    <div class="loading-spinner"><div class="spinner"></div></div>
+    <nav><a href="#" class="logo">🧁 Sweet Delight</a><ul class="nav-links"><li><a href="#home">Home</a></li><li><a href="#about">About</a></li><li><a href="#menu">Menu</a></li><li><a href="#specials">Specials</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#testimonials">Testimonials</a></li><li><a href="#contact">Contact</a></li></ul><div class="nav-controls"><div class="cart-icon">🛒 <span class="cart-count">0</span></div><button class="theme-toggle">🌙</button><div class="hamburger"><span></span><span></span><span></span></div></div></nav>
+    <section class="hero" id="home"><div class="hero-content"><div class="logo-icon">🎂</div><h1>Freshly Baked Happiness Every Day</h1><p>Handcrafted pastries, custom cakes, and artisan breads made with love</p><div class="cta-buttons"><button class="btn btn-primary" onclick="document.querySelector('.cart-sidebar').classList.add('active')">Order Now</button><button class="btn btn-secondary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Explore Menu</button></div></div></section>
+    <section class="about" id="about"><h2 class="section-title">About Our Bakery</h2><div class="about-content"><div class="about-text"><h3>Baking with Passion Since 2015</h3><p>At Sweet Delight Bakery, we believe every cake tells a story. Our journey began with a simple dream to bring authentic, artisan baking to our community.</p><div class="features"><div class="feature-card"><div class="icon">🌾</div><h4>Fresh Ingredients</h4></div><div class="feature-card"><div class="icon">👨‍🍳</div><h4>Handmade Daily</h4></div><div class="feature-card"><div class="icon">🎂</div><h4>Custom Cakes</h4></div><div class="feature-card"><div class="icon">🚚</div><h4>Fast Delivery</h4></div></div></div><div class="about-image"><img src="https://images.unsplash.com/photo-1586985289688-cacf313cc330?w=500&h=400&fit=crop"></div></div></section>
+    <section class="menu" id="menu"><h2 class="section-title">Our Premium Menu</h2><div class="menu-controls"><input type="text" class="search-bar" placeholder="Search..."><div class="category-filters"><button class="filter-btn active">All</button><button class="filter-btn">Cakes</button><button class="filter-btn">Pastries</button><button class="filter-btn">Cookies</button><button class="filter-btn">Donuts</button><button class="filter-btn">Beverages</button><button class="filter-btn">Bread</button></div></div><div class="menu-grid"></div></section>
+    <section class="specials" id="specials"><h2 class="section-title">✨ Special Offers</h2><div class="specials-grid"><div class="special-card"><div class="discount-badge">50% OFF</div><h3>Buy 1 Get 1</h3><p>On selected pastries</p><div class="countdown">Ends in: 24h</div><button class="btn btn-primary" style="width:100%;margin-top:1rem">Shop Now</button></div><div class="special-card"><div class="discount-badge">20% OFF</div><h3>Birthday Cakes</h3><p>Custom designs available</p><div class="countdown">Ends in: 24h</div><button class="btn btn-primary" style="width:100%;margin-top:1rem">Order Now</button></div><div class="special-card"><div class="discount-badge">30% OFF</div><h3>Weekend Combo</h3><p>Mix & match 5 items</p><div class="countdown">Ends in: 24h</div><button class="btn btn-primary" style="width:100%;margin-top:1rem">Get Combo</button></div></div></section>
+    <section class="gallery" id="gallery"><h2 class="section-title">Our Gallery</h2><div class="gallery-grid"><div class="gallery-item"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400"><div class="gallery-overlay"><span>🔍</span></div></div><div class="gallery-item"><img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400"><div class="gallery-overlay"><span>🔍</span></div></div><div class="gallery-item"><img src="https://images.unsplash.com/photo-1599599810694-b5ac4dd94548?w=400"><div class="gallery-overlay"><span>🔍</span></div></div><div class="gallery-item"><img src="https://images.unsplash.com/photo-1585080195519-c21856d71c74?w=400"><div class="gallery-overlay"><span>🔍</span></div></div><div class="gallery-item"><img src="https://images.unsplash.com/photo-1517668808822-9ebb02ae2a0e?w=400"><div class="gallery-overlay"><span>🔍</span></div></div><div class="gallery-item"><img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400"><div class="gallery-overlay"><span>🔍</span></div></div></div></section>
+    <div class="lightbox"><div class="lightbox-content"><span class="lightbox-close">&times;</span><img src="" alt="Preview"></div></div>
+    <section class="testimonials" id="testimonials"><h2 class="section-title">Customer Testimonials</h2><div class="testimonials-carousel"><div class="testimonial-card active"><div class="testimonial-image"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80"></div><div class="testimonial-name">Sarah Johnson</div><div class="rating">⭐⭐⭐⭐⭐</div><div class="testimonial-text">"The cake was absolutely stunning and delicious!"</div></div><div class="testimonial-card"><div class="testimonial-image"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80"></div><div class="testimonial-name">Michael Chen</div><div class="rating">⭐⭐⭐⭐⭐</div><div class="testimonial-text">"Coming here for 3 years. Amazing quality!"</div></div><div class="testimonial-card"><div class="testimonial-image"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80"></div><div class="testimonial-name">Emily Rodriguez</div><div class="rating">⭐⭐⭐⭐⭐</div><div class="testimonial-text">"Custom cake exceeded my expectations!"</div></div></div><div class="carousel-controls"><div class="carousel-dot active"></div><div class="carousel-dot"></div><div class="carousel-dot"></div></div></section>
+    <section class="faq" id="faq"><h2 class="section-title">FAQ</h2><div class="faq-container"><div class="faq-item"><div class="faq-question"><span>Do you offer custom cakes?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Yes! We specialize in custom cakes. Fill out our custom form and we'll contact you.</div></div><div class="faq-item"><div class="faq-question"><span>What are delivery options?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Same-day delivery available for orders before 10 AM. Free for orders over $50.</div></div><div class="faq-item"><div class="faq-question"><span>Allergen-free options?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Yes, we offer gluten-free and dairy-free options. Specify allergies when ordering.</div></div><div class="faq-item"><div class="faq-question"><span>How to order custom cakes?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Perfect! Scroll down to our custom cake form section to place your order.</div></div></div></section>
+    <section class="stats"><div class="stats-grid"><div class="stat-card"><div class="stat-number" data-target="5000">0</div><div class="stat-label">Happy Customers</div></div><div class="stat-card"><div class="stat-number" data-target="15000">0</div><div class="stat-label">Cakes Sold</div></div><div class="stat-card"><div class="stat-number" data-target="9">0</div><div class="stat-label">Years of Excellence</div></div><div class="stat-card"><div class="stat-number" data-target="98">0</div><div class="stat-label">Customer Satisfaction %</div></div></div></section>
+    <section class="custom-cake" id="custom"><h2 class="section-title">🎂 Order Your Custom Cake</h2><form><div class="form-grid"><div class="form-group"><label>Your Name *</label><input type="text" required><span class="form-error">Required</span></div><div class="form-group"><label>Email *</label><input type="email" required><span class="form-error">Required</span></div><div class="form-group"><label>Phone *</label><input type="tel" required><span class="form-error">Required</span></div><div class="form-group"><label>Flavor *</label><select required><option value="">Select...</option><option value="chocolate">Chocolate</option><option value="vanilla">Vanilla</option><option value="strawberry">Strawberry</option><option value="red">Red Velvet</option><option value="carrot">Carrot</option><option value="lemon">Lemon</option></select><span class="form-error">Required</span></div><div class="form-group"><label>Occasion *</label><select required><option value="">Select...</option><option value="birthday">Birthday</option><option value="wedding">Wedding</option><option value="anniversary">Anniversary</option><option value="corporate">Corporate</option><option value="other">Other</option></select><span class="form-error">Required</span></div><div class="form-group"><label>Date *</label><input type="date" required><span class="form-error">Required</span></div><div class="form-group"><label>Special Request</label><textarea placeholder="Tell us about your design..."></textarea></div><button type="submit" class="submit-btn">Order My Cake</button></div></form></section>
+    <section class="contact" id="contact"><h2 class="section-title">Get In Touch</h2><div class="contact-grid"><div class="contact-info"><div class="contact-item"><div class="contact-icon">📍</div><div class="contact-details"><h3>Address</h3><p>123 Bakery Lane<br>Sweet City, SC 12345</p></div></div><div class="contact-item"><div class="contact-icon">📞</div><div class="contact-details"><h3>Phone</h3><p>(555) 123-4567</p></div></div><div class="contact-item"><div class="contact-icon">✉️</div><div class="contact-details"><h3>Email</h3><p>hello@sweetdelight.com</p></div></div><div class="contact-item"><div class="contact-icon">🕐</div><div class="contact-details"><h3>Hours</h3><p>Mon-Fri: 7am-8pm<br>Sat-Sun: 8am-9pm</p></div></div></div><div class="map-container"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.1234567890!2d-74.0060!3d40.7128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQyJzQ2LjAiTiA3NMK0MzAnMjEuNiJX!5e0!3m2!1sen!2sus!4v1234567890"></iframe></div></div></section>
+    <footer><div class="footer-content"><div class="footer-section"><h4>About</h4><p>Premium artisan bakery since 2015.</p><div class="social-icons"><a href="#" class="social-icon">f</a><a href="#" class="social-icon">📷</a><a href="#" class="social-icon">𝕏</a></div></div><div class="footer-section"><h4>Links</h4><ul><li><a href="#menu">Menu</a></li><li><a href="#custom">Custom Orders</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#contact">Contact</a></li></ul></div><div class="footer-section"><h4>Company</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul></div><div class="footer-section"><h4>Newsletter</h4><p>Subscribe for offers!</p><div class="newsletter"><input type="email" placeholder="Your email"><button>Subscribe</button></div></div></div><div class="footer-bottom"><p>&copy; 2024 Sweet Delight Bakery. Made with 💕</p></div></footer>
+    <a href="https://wa.me/1234567890" target="_blank" class="whatsapp-btn">💬</a>
+    <div class="scroll-top">↑</div>
+</body>
+</html>

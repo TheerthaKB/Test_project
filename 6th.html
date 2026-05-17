@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input id="numbers">
+<button onclick="findValues()">Find</button>
+<p id="result"></p>
+
+<script>
+function findValues(){
+var arr=document.getElementById("numbers").value.split(",");
+var max=Number(arr[0]),min=Number(arr[0]);
+for(var i=0;i<arr.length;i++){
+var num=Number(arr[i]);
+if(num>max) max=num;
+if(num<min) min=num;	
+}
+document.getElementById("result").innerHTML="Largest: "+max+"<br>Smallest: "+min;
+} 	
+</script>
+</body>
+</html>
